@@ -1,3 +1,4 @@
+"""Configuration file for all constants and style colors."""
 import os
 
 # Configuration settings and constants
