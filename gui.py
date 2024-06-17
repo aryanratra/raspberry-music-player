@@ -13,6 +13,7 @@ class MusicPlayerApp:
         self.window = tk.Tk()
         self.window.title("Music Player App")
         self.window.geometry("320x480")
+        self.window.attributes("-fullscreen", True)
         self.window.configure(background=DARK_BG)
 
         #Creating Frames
