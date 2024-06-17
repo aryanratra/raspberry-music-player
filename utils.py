@@ -29,3 +29,15 @@ def list_items(directory_address):
         items.append(("No items", "None"))
 
     return items
+
+def truncated_title(text):
+    text_width = len(text)
+    max_width = 20
+    ellipsis = "..."
+    # Check if text width exceeds max_width
+    if text_width <= max_width:
+        return text
+    
+    # Truncate text and add ellipsis
+    else:
+        return str(text[:max_width]+ellipsis)

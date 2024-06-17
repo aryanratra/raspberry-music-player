@@ -3,8 +3,9 @@ import os
 import tkinter as tk
 from tkinter import Frame, Button, Label, Listbox
 from ttkbootstrap.constants import LEFT, RIGHT, TRUE, FALSE, END
-from config import DARK_BG, DARK_BG_2, TEXT_W, TEXT_G
-from utils import load_icon, load_default_cover, list_items
+from config import DARK_BG, DARK_BG_2, TEXT_W, TEXT_G, MUSIC_PATH
+from utils import load_icon, load_default_cover, list_items, truncated_title
+from player import MusicPlayer as mp
 
 class MusicPlayerApp:
     """Music Player class for the GUI."""
@@ -26,6 +27,7 @@ class MusicPlayerApp:
         self.back_btn_img = load_icon("Back_Btn.png")
         self.cover_art_sml_img = load_default_cover(0)
         self.play_btn_img = load_icon("Play_Btn.png")
+        self.pause_btn_img = load_icon("Pause_Btn.png")
 
         #Creating all labels
         self.app_title_label = Label(master=self.top_bar)
@@ -41,8 +43,10 @@ class MusicPlayerApp:
         self.file_listbox = Listbox(master=self.file_view)
 
         #Creating general variables
-        self.home_directory = "D:\\Music"
+        self.home_directory = MUSIC_PATH
         self.current_directory = ""
+
+        self.player = mp()
 
         self.setup_ui()
 
@@ -51,7 +55,7 @@ class MusicPlayerApp:
         self.create_components()
         self.create_file_browser()
         self.create_music_player()
-        self.update_file_components("D:\\Music")
+        self.update_file_components(MUSIC_PATH)
 
     def create_components(self):
         """Create all individual components."""
@@ -83,6 +87,7 @@ class MusicPlayerApp:
 
         self.play_btn.configure(image=self.play_btn_img)
         self.play_btn.configure(background=DARK_BG_2, borderwidth=0, activebackground=DARK_BG_2)
+        self.play_btn.configure(command= self.btn_play_pause)
         self.play_btn.pack(side=RIGHT)
 
         #Configuring all labels
@@ -133,15 +138,29 @@ class MusicPlayerApp:
         if file_type.strip() == "Folder":
             self.update_file_components(os.path.join(self.current_directory, file_name.strip()))
         elif file_type.strip() == "File":
-            print("Song played")
+            self.play_music(os.path.join(self.current_directory, file_name.strip()))
+            
 
     def back_directory(self):
         """"Functionality for back button to come back to previous directory."""
-        if self.current_directory == "D:\\Music\\":
+        if self.current_directory == str(MUSIC_PATH+"\\"):
             pass
         else:
             back_directory_path = self.current_directory.rsplit("\\", 2)[0]
             self.update_file_components(back_directory_path)
+
+    def play_music(self, song_path):
+        self.player.play_song(song_path)
+        self.play_btn.configure(image=self.pause_btn_img)
+        self.music_btn.configure(text=truncated_title(str("  "+os.path.basename(self.player.current_song))))
+
+    def btn_play_pause(self):
+        self.player.pause_song()
+        if self.player.paused == False:
+            self.play_btn.configure(image=self.pause_btn_img)
+        else:
+            self.play_btn.configure(image=self.play_btn_img)
+
 
     def run(self):
         """Run the main loop event."""
